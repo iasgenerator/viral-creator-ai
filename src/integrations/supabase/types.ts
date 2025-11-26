@@ -14,7 +14,140 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      platform_connections: {
+        Row: {
+          access_token: string
+          account_id: string | null
+          account_name: string | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          platform: Database["public"]["Enums"]["platform_type"]
+          refresh_token: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token: string
+          account_id?: string | null
+          account_name?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          platform: Database["public"]["Enums"]["platform_type"]
+          refresh_token?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string
+          account_id?: string | null
+          account_name?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          platform?: Database["public"]["Enums"]["platform_type"]
+          refresh_token?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          created_at: string
+          description: string
+          duration: number
+          id: string
+          is_active: boolean | null
+          platform: string
+          theme: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          duration: number
+          id?: string
+          is_active?: boolean | null
+          platform: string
+          theme: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          duration?: number
+          id?: string
+          is_active?: boolean | null
+          platform?: string
+          theme?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      videos: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          id: string
+          metadata: Json | null
+          platforms: Database["public"]["Enums"]["platform_type"][] | null
+          project_id: string
+          published_at: string | null
+          scheduled_for: string | null
+          script: string | null
+          status: Database["public"]["Enums"]["video_status"] | null
+          thumbnail_url: string | null
+          video_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          platforms?: Database["public"]["Enums"]["platform_type"][] | null
+          project_id: string
+          published_at?: string | null
+          scheduled_for?: string | null
+          script?: string | null
+          status?: Database["public"]["Enums"]["video_status"] | null
+          thumbnail_url?: string | null
+          video_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          platforms?: Database["public"]["Enums"]["platform_type"][] | null
+          project_id?: string
+          published_at?: string | null
+          scheduled_for?: string | null
+          script?: string | null
+          status?: Database["public"]["Enums"]["video_status"] | null
+          thumbnail_url?: string | null
+          video_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "videos_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +156,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      platform_type: "tiktok" | "instagram" | "youtube"
+      video_status: "generating" | "scheduled" | "published" | "failed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +284,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      platform_type: ["tiktok", "instagram", "youtube"],
+      video_status: ["generating", "scheduled", "published", "failed"],
+    },
   },
 } as const
