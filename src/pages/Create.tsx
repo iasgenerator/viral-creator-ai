@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,22 +9,82 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const Create = () => {
+  const navigate = useNavigate();
   const [theme, setTheme] = useState("");
+  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [platform, setPlatform] = useState("");
   const [duration, setDuration] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleGenerate = () => {
-    if (!theme || !description || !platform || !duration) {
+  useEffect(() => {
+    // Check if user is authenticated
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        navigate("/auth");
+      }
+    });
+  }, [navigate]);
+
+  const handleGenerate = async () => {
+    if (!theme || !title || !description || !platform || !duration) {
       toast.error("Veuillez remplir tous les champs");
       return;
     }
     
-    toast.success("Génération en cours...", {
-      description: "Votre vidéo sera prête dans quelques instants"
-    });
+    setLoading(true);
+    
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error("Vous devez être connecté");
+        navigate("/auth");
+        return;
+      }
+
+      // Create project
+      const { data: project, error: projectError } = await supabase
+        .from('projects')
+        .insert({
+          user_id: session.user.id,
+          title,
+          theme,
+          description,
+          platform,
+          duration: parseInt(duration)
+        })
+        .select()
+        .single();
+
+      if (projectError) throw projectError;
+
+      toast.success("Projet créé!", {
+        description: "Génération de 10 vidéos en cours..."
+      });
+
+      // Trigger video generation
+      const { data: functionData, error: functionError } = await supabase.functions.invoke('generate-videos', {
+        body: { projectId: project.id }
+      });
+
+      if (functionError) throw functionError;
+
+      toast.success("Vidéos générées!", {
+        description: "10 vidéos seront publiées automatiquement aux heures optimales"
+      });
+
+      navigate("/dashboard");
+    } catch (error: any) {
+      console.error('Error:', error);
+      toast.error("Erreur", {
+        description: error.message
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -63,6 +124,16 @@ const Create = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="title">Titre du projet *</Label>
+                <Input
+                  id="title"
+                  placeholder="Ex: Série productivité 2025"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="theme">Thème de la vidéo *</Label>
                 <Input
@@ -123,10 +194,14 @@ const Create = () => {
                   size="lg" 
                   className="w-full"
                   onClick={handleGenerate}
+                  disabled={loading}
                 >
                   <Sparkles className="mr-2" />
-                  Générer la vidéo avec l'IA
+                  {loading ? "Génération en cours..." : "Générer 10 vidéos avec l'IA"}
                 </Button>
+                <p className="text-xs text-center text-muted-foreground mt-2">
+                  10 vidéos seront créées et publiées automatiquement aux heures optimales
+                </p>
               </div>
             </CardContent>
           </Card>
