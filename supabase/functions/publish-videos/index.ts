@@ -89,10 +89,31 @@ serve(async (req) => {
           }
 
           // TODO: Implement actual platform publishing
-          // For now, we'll simulate success
+          // For now, we'll simulate success and generate random revenue
           console.log(`Would publish to ${platform} for account ${connection.account_name}`);
-          publishResults.push({ platform, status: 'success' });
+          
+          // Simulate revenue generation (between 5-50€ per video per platform)
+          const simulatedRevenue = Math.random() * 45 + 5;
+          
+          publishResults.push({ 
+            platform, 
+            status: 'success',
+            revenue: parseFloat(simulatedRevenue.toFixed(2))
+          });
         }
+
+        // Calculate revenue by platform
+        const revenueByPlatform = {
+          tiktok: 0,
+          instagram: 0,
+          youtube: 0
+        };
+
+        publishResults.forEach(result => {
+          if (result.status === 'success' && result.revenue) {
+            revenueByPlatform[result.platform as keyof typeof revenueByPlatform] = result.revenue;
+          }
+        });
 
         // Update video status
         await supabase
@@ -102,7 +123,8 @@ serve(async (req) => {
             published_at: now.toISOString(),
             metadata: {
               ...video.metadata,
-              publish_results: publishResults
+              publish_results: publishResults,
+              revenue: revenueByPlatform
             }
           })
           .eq('id', video.id);

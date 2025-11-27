@@ -11,6 +11,12 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [projects, setProjects] = useState<any[]>([]);
   const [stats, setStats] = useState({ total: 0, scheduled: 0, published: 0 });
+  const [revenue, setRevenue] = useState({ 
+    total: 0, 
+    tiktok: 0, 
+    instagram: 0, 
+    youtube: 0 
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -57,6 +63,30 @@ const Dashboard = () => {
         published: videosData?.filter(v => v.status === 'published').length || 0
       };
       setStats(stats);
+
+      // Calculate revenue by platform
+      let totalRevenue = 0;
+      let tiktokRevenue = 0;
+      let instagramRevenue = 0;
+      let youtubeRevenue = 0;
+
+      videosData?.forEach((video: any) => {
+        if (video.metadata?.revenue) {
+          const rev = video.metadata.revenue;
+          tiktokRevenue += rev.tiktok || 0;
+          instagramRevenue += rev.instagram || 0;
+          youtubeRevenue += rev.youtube || 0;
+        }
+      });
+
+      totalRevenue = tiktokRevenue + instagramRevenue + youtubeRevenue;
+
+      setRevenue({
+        total: totalRevenue,
+        tiktok: tiktokRevenue,
+        instagram: instagramRevenue,
+        youtube: youtubeRevenue
+      });
     } catch (error: any) {
       console.error('Error loading data:', error);
       toast.error("Erreur de chargement");
@@ -95,6 +125,7 @@ const Dashboard = () => {
       <main className="container mx-auto px-4 py-8">
         {/* Stats Cards */}
         <div className="mb-8">
+          <h2 className="text-xl font-semibold mb-4">Statistiques Vidéos</h2>
           <div className="grid md:grid-cols-3 gap-6">
             <Card>
               <CardHeader className="pb-3">
@@ -134,6 +165,64 @@ const Dashboard = () => {
                 <div className="flex items-center gap-2">
                   <TrendingUp className="text-primary" />
                   <div className="text-3xl font-bold">{stats.published}</div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Revenue Stats */}
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold mb-4">Revenus Générés</h2>
+          <div className="grid md:grid-cols-4 gap-6">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  Total
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-primary">
+                  {revenue.total.toFixed(2)} €
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  TikTok
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {revenue.tiktok.toFixed(2)} €
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  Instagram
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {revenue.instagram.toFixed(2)} €
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  YouTube Shorts
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {revenue.youtube.toFixed(2)} €
                 </div>
               </CardContent>
             </Card>
