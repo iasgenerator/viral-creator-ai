@@ -61,6 +61,7 @@ export type Database = {
           created_at: string
           description: string
           duration: number
+          has_subtitles: boolean | null
           id: string
           is_active: boolean | null
           platform: string
@@ -68,11 +69,15 @@ export type Database = {
           title: string
           updated_at: string
           user_id: string
+          video_type: string | null
+          voice_tone: string | null
+          voice_type: string | null
         }
         Insert: {
           created_at?: string
           description: string
           duration: number
+          has_subtitles?: boolean | null
           id?: string
           is_active?: boolean | null
           platform: string
@@ -80,11 +85,15 @@ export type Database = {
           title: string
           updated_at?: string
           user_id: string
+          video_type?: string | null
+          voice_tone?: string | null
+          voice_type?: string | null
         }
         Update: {
           created_at?: string
           description?: string
           duration?: number
+          has_subtitles?: boolean | null
           id?: string
           is_active?: boolean | null
           platform?: string
@@ -92,6 +101,9 @@ export type Database = {
           title?: string
           updated_at?: string
           user_id?: string
+          video_type?: string | null
+          voice_tone?: string | null
+          voice_type?: string | null
         }
         Relationships: []
       }
