@@ -18,6 +18,10 @@ const Create = () => {
   const [description, setDescription] = useState("");
   const [platform, setPlatform] = useState("");
   const [duration, setDuration] = useState("");
+  const [voiceType, setVoiceType] = useState("alloy");
+  const [voiceTone, setVoiceTone] = useState("neutral");
+  const [videoType, setVideoType] = useState("real");
+  const [hasSubtitles, setHasSubtitles] = useState(true);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -54,7 +58,11 @@ const Create = () => {
           theme,
           description,
           platform,
-          duration: parseInt(duration)
+          duration: parseInt(duration),
+          voice_type: voiceType,
+          voice_tone: voiceTone,
+          video_type: videoType,
+          has_subtitles: hasSubtitles
         })
         .select()
         .single();
@@ -185,6 +193,73 @@ const Create = () => {
                       <SelectItem value="60">60 secondes</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+              </div>
+
+              <div className="space-y-4 pt-2 border-t">
+                <h3 className="font-semibold text-sm">Options avancées</h3>
+                
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="voiceType">Type de voix IA</Label>
+                    <Select value={voiceType} onValueChange={setVoiceType}>
+                      <SelectTrigger id="voiceType">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="alloy">Alloy (Neutre)</SelectItem>
+                        <SelectItem value="echo">Echo (Masculine)</SelectItem>
+                        <SelectItem value="fable">Fable (Britannique)</SelectItem>
+                        <SelectItem value="onyx">Onyx (Profonde)</SelectItem>
+                        <SelectItem value="nova">Nova (Féminine)</SelectItem>
+                        <SelectItem value="shimmer">Shimmer (Douce)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="voiceTone">Ton de la voix</Label>
+                    <Select value={voiceTone} onValueChange={setVoiceTone}>
+                      <SelectTrigger id="voiceTone">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="neutral">Neutre</SelectItem>
+                        <SelectItem value="enthusiastic">Enthousiaste</SelectItem>
+                        <SelectItem value="calm">Calme</SelectItem>
+                        <SelectItem value="energetic">Énergique</SelectItem>
+                        <SelectItem value="professional">Professionnel</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="videoType">Type de vidéo</Label>
+                    <Select value={videoType} onValueChange={setVideoType}>
+                      <SelectTrigger id="videoType">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="real">Vidéo réelle d'arrière-plan</SelectItem>
+                        <SelectItem value="ai-generated">Générée par IA</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="subtitles">Sous-titres</Label>
+                    <Select value={hasSubtitles ? "yes" : "no"} onValueChange={(v) => setHasSubtitles(v === "yes")}>
+                      <SelectTrigger id="subtitles">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="yes">Avec sous-titres</SelectItem>
+                        <SelectItem value="no">Sans sous-titres</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </div>
 

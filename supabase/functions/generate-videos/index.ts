@@ -31,6 +31,17 @@ serve(async (req) => {
 
     console.log('Project details:', project);
 
+    // Prepare voice and video configuration
+    const voiceConfig = {
+      type: project.voice_type || 'alloy',
+      tone: project.voice_tone || 'neutral'
+    };
+    
+    const videoConfig = {
+      type: project.video_type || 'real',
+      hasSubtitles: project.has_subtitles !== false
+    };
+
     // Generate 10 videos with AI
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     const videosToGenerate = 10;
@@ -53,12 +64,18 @@ serve(async (req) => {
               content: `Tu es un expert en création de contenu viral pour les réseaux sociaux. 
               Tu crées des scripts captivants pour des vidéos courtes (TikTok, Instagram Reels, YouTube Shorts).
               
+              Configuration de la voix: ${voiceConfig.type} avec un ton ${voiceConfig.tone}
+              Type de vidéo: ${videoConfig.type === 'real' ? 'vidéo réelle d\'arrière-plan' : 'vidéo générée par IA'}
+              Sous-titres: ${videoConfig.hasSubtitles ? 'activés' : 'désactivés'}
+              
               Règles importantes:
               - Le script doit être accrocheur dès les 3 premières secondes
-              - Utilise des phrases courtes et percutantes
+              - Utilise des phrases courtes et percutantes adaptées au ton ${voiceConfig.tone}
               - Ajoute des éléments de surprise ou d'émotion
               - Termine avec un appel à l'action (CTA) fort
-              - Adapte le ton au thème (humoristique, éducatif, inspirant, etc.)
+              - Adapte le ton au thème (${voiceConfig.tone})
+              ${videoConfig.type === 'real' ? '- Le script doit accompagner une vidéo d\'arrière-plan réelle qui tourne' : '- Le script doit décrire des scènes pour une vidéo générée par IA'}
+              ${videoConfig.hasSubtitles ? '- Le texte sera affiché en sous-titres, donc privilégie des phrases courtes et lisibles' : ''}
               - Le script doit durer exactement ${project.duration} secondes quand lu à voix haute`
             },
             {
@@ -111,7 +128,9 @@ serve(async (req) => {
           metadata: {
             video_number: i + 1,
             total_videos: videosToGenerate,
-            generated_at: new Date().toISOString()
+            generated_at: new Date().toISOString(),
+            voice_config: voiceConfig,
+            video_config: videoConfig
           }
         });
 
