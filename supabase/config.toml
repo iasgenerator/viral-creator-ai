@@ -1,1 +1,13 @@
 project_id = "wneybyzkwgvscclpbxml"
+
+[functions.generate-videos]
+verify_jwt = true
+
+[functions.publish-videos]
+verify_jwt = false
+
+[functions.oauth-connect]
+verify_jwt = true
+
+[functions.oauth-callback]
+verify_jwt = false
