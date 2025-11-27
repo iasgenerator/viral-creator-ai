@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Plus, TrendingUp, Video, Calendar, LogOut } from "lucide-react";
+import { Plus, TrendingUp, Video, Calendar, LogOut, Link as LinkIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -110,6 +110,12 @@ const Dashboard = () => {
             <Button variant="outline" onClick={handleLogout}>
               <LogOut className="mr-2 h-4 w-4" />
               Déconnexion
+            </Button>
+            <Button asChild variant="outline">
+              <Link to="/connections">
+                <LinkIcon className="mr-2 h-4 w-4" />
+                Connexions
+              </Link>
             </Button>
             <Button asChild variant="hero">
               <Link to="/create">
