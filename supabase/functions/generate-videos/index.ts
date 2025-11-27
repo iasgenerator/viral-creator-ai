@@ -41,6 +41,22 @@ serve(async (req) => {
       type: project.video_type || 'real',
       hasSubtitles: project.has_subtitles !== false
     };
+    
+    const contentLanguage = project.language || 'fr';
+    const languageNames: Record<string, string> = {
+      fr: 'français',
+      en: 'English',
+      es: 'español',
+      de: 'Deutsch',
+      it: 'italiano',
+      pt: 'português',
+      nl: 'Nederlands',
+      pl: 'polski',
+      ru: 'русский',
+      ja: '日本語',
+      zh: '中文',
+      ar: 'العربية'
+    };
 
     // Generate 10 videos with AI
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
@@ -61,37 +77,42 @@ serve(async (req) => {
           messages: [
             {
               role: 'system',
-              content: `Tu es un expert en création de contenu viral pour les réseaux sociaux. 
-              Tu crées des scripts captivants pour des vidéos courtes (TikTok, Instagram Reels, YouTube Shorts).
+              content: `You are an expert in creating viral content for social media. 
+              You create captivating scripts for short videos (TikTok, Instagram Reels, YouTube Shorts).
               
-              Configuration de la voix: ${voiceConfig.type} avec un ton ${voiceConfig.tone}
-              Type de vidéo: ${videoConfig.type === 'real' ? 'vidéo réelle d\'arrière-plan' : 'vidéo générée par IA'}
-              Sous-titres: ${videoConfig.hasSubtitles ? 'activés' : 'désactivés'}
+              CRITICAL: The entire script MUST be written in ${languageNames[contentLanguage] || contentLanguage}.
               
-              Règles importantes:
-              - Le script doit être accrocheur dès les 3 premières secondes
-              - Utilise des phrases courtes et percutantes adaptées au ton ${voiceConfig.tone}
-              - Ajoute des éléments de surprise ou d'émotion
-              - Termine avec un appel à l'action (CTA) fort
-              - Adapte le ton au thème (${voiceConfig.tone})
-              ${videoConfig.type === 'real' ? '- Le script doit accompagner une vidéo d\'arrière-plan réelle qui tourne' : '- Le script doit décrire des scènes pour une vidéo générée par IA'}
-              ${videoConfig.hasSubtitles ? '- Le texte sera affiché en sous-titres, donc privilégie des phrases courtes et lisibles' : ''}
-              - Le script doit durer exactement ${project.duration} secondes quand lu à voix haute`
+              Voice configuration: ${voiceConfig.type} with a ${voiceConfig.tone} tone
+              Video type: ${videoConfig.type === 'real' ? 'real background video' : 'AI-generated video'}
+              Subtitles: ${videoConfig.hasSubtitles ? 'enabled' : 'disabled'}
+              
+              Important rules:
+              - The script must be catchy from the first 3 seconds
+              - Use short and punchy sentences adapted to the ${voiceConfig.tone} tone
+              - Add elements of surprise or emotion
+              - End with a strong call to action (CTA)
+              - Adapt the tone to the theme (${voiceConfig.tone})
+              ${videoConfig.type === 'real' ? '- The script must accompany a real background video' : '- The script must describe scenes for an AI-generated video'}
+              ${videoConfig.hasSubtitles ? '- The text will be displayed as subtitles, so favor short and readable sentences' : ''}
+              - The script must last exactly ${project.duration} seconds when read aloud
+              - WRITE EVERYTHING IN ${languageNames[contentLanguage] || contentLanguage}`
             },
             {
               role: 'user',
-              content: `Crée un script viral unique sur ce thème: ${project.theme}
+              content: `Create a unique viral script on this theme: ${project.theme}
               
               Description: ${project.description}
-              Durée: ${project.duration} secondes
-              Plateforme: ${project.platform}
+              Duration: ${project.duration} seconds
+              Platform: ${project.platform}
+              Language: ${languageNames[contentLanguage] || contentLanguage}
               
-              Format du script:
-              [HOOK - 3 secondes]: phrase d'accroche ultra percutante
-              [CORPS - ${project.duration - 8} secondes]: contenu principal avec 2-3 points clés
-              [CTA - 5 secondes]: appel à l'action engageant
+              Script format:
+              [HOOK - 3 seconds]: ultra catchy opening line
+              [BODY - ${project.duration - 8} seconds]: main content with 2-3 key points
+              [CTA - 5 seconds]: engaging call to action
               
-              Rends ce script #${i + 1} complètement différent des précédents!`
+              IMPORTANT: Write the entire script in ${languageNames[contentLanguage] || contentLanguage}!
+              Make this script #${i + 1} completely different from the previous ones!`
             }
           ],
           temperature: 1.0,

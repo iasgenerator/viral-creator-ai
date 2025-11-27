@@ -22,6 +22,7 @@ const Create = () => {
   const [voiceTone, setVoiceTone] = useState("neutral");
   const [videoType, setVideoType] = useState("real");
   const [hasSubtitles, setHasSubtitles] = useState(true);
+  const [language, setLanguage] = useState("fr");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -62,7 +63,8 @@ const Create = () => {
           voice_type: voiceType,
           voice_tone: voiceTone,
           video_type: videoType,
-          has_subtitles: hasSubtitles
+          has_subtitles: hasSubtitles,
+          language: language
         })
         .select()
         .single();
@@ -199,6 +201,29 @@ const Create = () => {
               <div className="space-y-4 pt-2 border-t">
                 <h3 className="font-semibold text-sm">Options avancées</h3>
                 
+                <div className="space-y-2">
+                  <Label htmlFor="language">Langue du contenu</Label>
+                  <Select value={language} onValueChange={setLanguage}>
+                    <SelectTrigger id="language">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="fr">🇫🇷 Français</SelectItem>
+                      <SelectItem value="en">🇬🇧 English</SelectItem>
+                      <SelectItem value="es">🇪🇸 Español</SelectItem>
+                      <SelectItem value="de">🇩🇪 Deutsch</SelectItem>
+                      <SelectItem value="it">🇮🇹 Italiano</SelectItem>
+                      <SelectItem value="pt">🇵🇹 Português</SelectItem>
+                      <SelectItem value="nl">🇳🇱 Nederlands</SelectItem>
+                      <SelectItem value="pl">🇵🇱 Polski</SelectItem>
+                      <SelectItem value="ru">🇷🇺 Русский</SelectItem>
+                      <SelectItem value="ja">🇯🇵 日本語</SelectItem>
+                      <SelectItem value="zh">🇨🇳 中文</SelectItem>
+                      <SelectItem value="ar">🇸🇦 العربية</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="voiceType">Type de voix IA</Label>

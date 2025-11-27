@@ -64,6 +64,7 @@ export type Database = {
           has_subtitles: boolean | null
           id: string
           is_active: boolean | null
+          language: string | null
           platform: string
           theme: string
           title: string
@@ -80,6 +81,7 @@ export type Database = {
           has_subtitles?: boolean | null
           id?: string
           is_active?: boolean | null
+          language?: string | null
           platform: string
           theme: string
           title: string
@@ -96,6 +98,7 @@ export type Database = {
           has_subtitles?: boolean | null
           id?: string
           is_active?: boolean | null
+          language?: string | null
           platform?: string
           theme?: string
           title?: string
