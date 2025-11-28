@@ -18,6 +18,7 @@ const Dashboard = () => {
     youtube: 0 
   });
   const [loading, setLoading] = useState(true);
+  const [publishing, setPublishing] = useState(false);
 
   useEffect(() => {
     // Check auth
@@ -100,6 +101,25 @@ const Dashboard = () => {
     navigate("/");
   };
 
+  const handlePublishVideos = async () => {
+    setPublishing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('publish-videos');
+      
+      if (error) throw error;
+      
+      toast.success(`${data.processed} vidéo(s) traitée(s) avec succès`);
+      
+      // Reload data to update stats
+      await loadData();
+    } catch (error: any) {
+      console.error('Error publishing videos:', error);
+      toast.error("Erreur lors de la publication des vidéos");
+    } finally {
+      setPublishing(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -131,7 +151,19 @@ const Dashboard = () => {
       <main className="container mx-auto px-4 py-8">
         {/* Stats Cards */}
         <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Statistiques Vidéos</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">Statistiques Vidéos</h2>
+            {stats.scheduled > 0 && (
+              <Button 
+                onClick={handlePublishVideos} 
+                disabled={publishing}
+                variant="hero"
+              >
+                <TrendingUp className="mr-2 h-4 w-4" />
+                {publishing ? "Publication en cours..." : `Publier ${stats.scheduled} vidéo(s)`}
+              </Button>
+            )}
+          </div>
           <div className="grid md:grid-cols-3 gap-6">
             <Card>
               <CardHeader className="pb-3">
