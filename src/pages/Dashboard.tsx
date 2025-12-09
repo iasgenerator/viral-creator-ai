@@ -3,13 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Plus, TrendingUp, Video, Calendar, LogOut, Link as LinkIcon } from "lucide-react";
+import { Plus, TrendingUp, Video, Calendar, LogOut, Link as LinkIcon, ChevronDown, ChevronUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import VideoPreview from "@/components/VideoPreview";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [projects, setProjects] = useState<any[]>([]);
+  const [projectVideos, setProjectVideos] = useState<Record<string, any[]>>({});
+  const [expandedProjects, setExpandedProjects] = useState<Record<string, boolean>>({});
   const [stats, setStats] = useState({ total: 0, scheduled: 0, published: 0 });
   const [revenue, setRevenue] = useState({ 
     total: 0, 
@@ -51,12 +54,23 @@ const Dashboard = () => {
       if (projectsError) throw projectsError;
       setProjects(projectsData || []);
 
-      // Load stats
+      // Load all videos with full data
       const { data: videosData, error: videosError } = await supabase
         .from('videos')
-        .select('status');
+        .select('*')
+        .order('scheduled_for', { ascending: true });
 
       if (videosError) throw videosError;
+
+      // Group videos by project
+      const videosByProject: Record<string, any[]> = {};
+      videosData?.forEach((video: any) => {
+        if (!videosByProject[video.project_id]) {
+          videosByProject[video.project_id] = [];
+        }
+        videosByProject[video.project_id].push(video);
+      });
+      setProjectVideos(videosByProject);
 
       const stats = {
         total: videosData?.length || 0,
@@ -93,6 +107,31 @@ const Dashboard = () => {
       toast.error("Erreur de chargement");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const toggleProjectExpanded = (projectId: string) => {
+    setExpandedProjects(prev => ({
+      ...prev,
+      [projectId]: !prev[projectId]
+    }));
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'scheduled': return 'bg-amber-500/10 text-amber-600';
+      case 'published': return 'bg-green-500/10 text-green-600';
+      case 'failed': return 'bg-red-500/10 text-red-600';
+      default: return 'bg-muted text-muted-foreground';
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'scheduled': return 'En attente';
+      case 'published': return 'Publiée';
+      case 'failed': return 'Échouée';
+      default: return status;
     }
   };
 
@@ -287,27 +326,93 @@ const Dashboard = () => {
               </div>
             ) : (
               <div className="space-y-4">
-                {projects.map((project) => (
-                  <div key={project.id} className="p-4 border rounded-lg">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-semibold">{project.title}</h3>
-                        <p className="text-sm text-muted-foreground mt-1">{project.theme}</p>
-                        <div className="flex gap-2 mt-2 text-xs">
-                          <span className="px-2 py-1 bg-primary/10 text-primary rounded">
-                            {project.platform}
+                {projects.map((project) => {
+                  const videos = projectVideos[project.id] || [];
+                  const isExpanded = expandedProjects[project.id];
+                  
+                  return (
+                    <div key={project.id} className="border rounded-lg overflow-hidden">
+                      <div 
+                        className="p-4 flex justify-between items-start cursor-pointer hover:bg-muted/50 transition-colors"
+                        onClick={() => toggleProjectExpanded(project.id)}
+                      >
+                        <div>
+                          <h3 className="font-semibold">{project.title}</h3>
+                          <p className="text-sm text-muted-foreground mt-1">{project.theme}</p>
+                          <div className="flex gap-2 mt-2 text-xs">
+                            <span className="px-2 py-1 bg-primary/10 text-primary rounded">
+                              {project.platform}
+                            </span>
+                            <span className="px-2 py-1 bg-secondary text-secondary-foreground rounded">
+                              {project.duration}s
+                            </span>
+                            <span className="px-2 py-1 bg-muted text-muted-foreground rounded">
+                              {videos.length} vidéo(s)
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-muted-foreground">
+                            {new Date(project.created_at).toLocaleDateString('fr-FR')}
                           </span>
-                          <span className="px-2 py-1 bg-secondary text-secondary-foreground rounded">
-                            {project.duration}s
-                          </span>
+                          {isExpanded ? (
+                            <ChevronUp className="h-5 w-5 text-muted-foreground" />
+                          ) : (
+                            <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                          )}
                         </div>
                       </div>
-                      <div className="text-sm text-muted-foreground">
-                        {new Date(project.created_at).toLocaleDateString('fr-FR')}
-                      </div>
+                      
+                      {/* Videos List */}
+                      {isExpanded && videos.length > 0 && (
+                        <div className="border-t bg-muted/30 p-4">
+                          <h4 className="text-sm font-medium mb-3">Vidéos du projet</h4>
+                          <div className="space-y-2">
+                            {videos.map((video, idx) => (
+                              <div 
+                                key={video.id} 
+                                className="flex items-center justify-between p-3 bg-background rounded-lg border"
+                              >
+                                <div className="flex items-center gap-3">
+                                  <span className="text-xs text-muted-foreground font-mono">
+                                    #{idx + 1}
+                                  </span>
+                                  <div>
+                                    <div className="text-sm font-medium truncate max-w-[300px]">
+                                      {video.script?.substring(0, 60)}...
+                                    </div>
+                                    <div className="flex items-center gap-2 mt-1">
+                                      <span className={`text-xs px-2 py-0.5 rounded ${getStatusColor(video.status)}`}>
+                                        {getStatusLabel(video.status)}
+                                      </span>
+                                      <span className="text-xs text-muted-foreground">
+                                        {new Date(video.scheduled_for).toLocaleString('fr-FR', {
+                                          dateStyle: 'short',
+                                          timeStyle: 'short'
+                                        })}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <VideoPreview 
+                                  video={video} 
+                                  projectTheme={project.theme}
+                                  onVideoUpdated={loadData}
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {isExpanded && videos.length === 0 && (
+                        <div className="border-t bg-muted/30 p-4 text-center text-sm text-muted-foreground">
+                          Aucune vidéo générée pour ce projet
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </CardContent>
