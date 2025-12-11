@@ -74,8 +74,11 @@ const Auth = () => {
 
       toast.success("Connexion réussie!");
     } catch (error: any) {
-      toast.error("Erreur de connexion", {
-        description: error.message
+      const isNetworkError = error.message?.includes("Failed to fetch") || error.message?.includes("NetworkError");
+      toast.error(isNetworkError ? "Problème de connexion réseau" : "Erreur de connexion", {
+        description: isNetworkError 
+          ? "Le serveur est temporairement indisponible. Veuillez réessayer dans quelques instants."
+          : error.message
       });
     } finally {
       setLoading(false);
