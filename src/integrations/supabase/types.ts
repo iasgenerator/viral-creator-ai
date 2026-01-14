@@ -17,6 +17,7 @@ export type Database = {
       platform_connections: {
         Row: {
           access_token: string
+          access_token_encrypted: string | null
           account_id: string | null
           account_name: string | null
           created_at: string
@@ -25,11 +26,13 @@ export type Database = {
           is_active: boolean | null
           platform: Database["public"]["Enums"]["platform_type"]
           refresh_token: string | null
+          refresh_token_encrypted: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           access_token: string
+          access_token_encrypted?: string | null
           account_id?: string | null
           account_name?: string | null
           created_at?: string
@@ -38,11 +41,13 @@ export type Database = {
           is_active?: boolean | null
           platform: Database["public"]["Enums"]["platform_type"]
           refresh_token?: string | null
+          refresh_token_encrypted?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           access_token?: string
+          access_token_encrypted?: string | null
           account_id?: string | null
           account_name?: string | null
           created_at?: string
@@ -51,6 +56,7 @@ export type Database = {
           is_active?: boolean | null
           platform?: Database["public"]["Enums"]["platform_type"]
           refresh_token?: string | null
+          refresh_token_encrypted?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -168,7 +174,40 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      decrypt_token: { Args: { encrypted_token: string }; Returns: string }
+      encrypt_token: { Args: { token: string }; Returns: string }
+      get_decrypted_platform_connection: {
+        Args: { connection_id: string }
+        Returns: {
+          access_token: string
+          account_id: string
+          account_name: string
+          created_at: string
+          expires_at: string
+          id: string
+          is_active: boolean
+          platform: Database["public"]["Enums"]["platform_type"]
+          refresh_token: string
+          updated_at: string
+          user_id: string
+        }[]
+      }
+      get_user_decrypted_connections: {
+        Args: { p_user_id: string }
+        Returns: {
+          access_token: string
+          account_id: string
+          account_name: string
+          created_at: string
+          expires_at: string
+          id: string
+          is_active: boolean
+          platform: Database["public"]["Enums"]["platform_type"]
+          refresh_token: string
+          updated_at: string
+          user_id: string
+        }[]
+      }
     }
     Enums: {
       platform_type: "tiktok" | "instagram" | "youtube"

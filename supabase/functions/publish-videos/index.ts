@@ -374,12 +374,9 @@ serve(async (req) => {
       try {
         console.log(`Processing video ${video.id}`);
 
-        // Get platform connections for user
+        // Get platform connections for user with decrypted tokens
         const { data: connections, error: connectionsError } = await supabase
-          .from('platform_connections')
-          .select('*')
-          .eq('user_id', video.projects.user_id)
-          .eq('is_active', true);
+          .rpc('get_user_decrypted_connections', { p_user_id: video.projects.user_id });
 
         if (connectionsError) throw connectionsError;
 
@@ -413,7 +410,7 @@ serve(async (req) => {
         // Publish to each connected platform
         const publishResults = [];
         for (const platform of video.platforms) {
-          const connection = connections.find(c => c.platform === platform);
+          const connection = connections.find((c: any) => c.platform === platform);
           
           if (!connection) {
             console.log(`No connection for ${platform}`);
