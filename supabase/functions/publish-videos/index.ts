@@ -479,26 +479,48 @@ serve(async (req) => {
           }
         });
 
-        // Update video status
-        await supabase
-          .from('videos')
-          .update({
-            status: 'published',
-            published_at: now.toISOString(),
-            metadata: {
-              ...video.metadata,
-              publish_results: publishResults,
-              revenue: revenueByPlatform,
-              hashtags: hashtags
-            }
-          })
-          .eq('id', video.id);
+        // Check if all platforms were successful
+        const allSuccessful = publishResults.every(r => r.status === 'success' || r.status === 'skipped');
+        const hasAtLeastOneSuccess = publishResults.some(r => r.status === 'success');
 
-        results.push({
-          videoId: video.id,
-          status: 'published',
-          platforms: publishResults
-        });
+        if (hasAtLeastOneSuccess) {
+          // Delete video from database after successful publication
+          console.log(`Deleting video ${video.id} after successful publication`);
+          
+          const { error: deleteError } = await supabase
+            .from('videos')
+            .delete()
+            .eq('id', video.id);
+
+          if (deleteError) {
+            console.error(`Failed to delete video ${video.id}:`, deleteError);
+          }
+
+          results.push({
+            videoId: video.id,
+            status: 'published_and_deleted',
+            platforms: publishResults
+          });
+        } else {
+          // Mark as failed if no platform succeeded
+          await supabase
+            .from('videos')
+            .update({
+              status: 'failed',
+              error_message: 'Failed to publish to all platforms',
+              metadata: {
+                ...video.metadata,
+                publish_results: publishResults
+              }
+            })
+            .eq('id', video.id);
+
+          results.push({
+            videoId: video.id,
+            status: 'failed',
+            platforms: publishResults
+          });
+        }
       } catch (error: any) {
         console.error(`Error publishing video ${video.id}:`, error);
         
