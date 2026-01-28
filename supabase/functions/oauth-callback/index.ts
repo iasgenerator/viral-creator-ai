@@ -115,14 +115,24 @@ serve(async (req) => {
       }
     }
 
-    // Sauvegarder la connexion dans la base de données
+    // Encrypt tokens before storing
+    const { data: encryptedAccessToken } = await supabaseClient
+      .rpc('encrypt_token', { token: accessToken });
+    
+    const { data: encryptedRefreshToken } = refreshToken 
+      ? await supabaseClient.rpc('encrypt_token', { token: refreshToken })
+      : { data: null };
+
+    // Save connection with encrypted tokens only
     const { error } = await supabaseClient
       .from('platform_connections')
       .insert({
         user_id: userId,
         platform,
-        access_token: accessToken,
-        refresh_token: refreshToken,
+        access_token: '***ENCRYPTED***', // Placeholder only
+        access_token_encrypted: encryptedAccessToken,
+        refresh_token: refreshToken ? '***ENCRYPTED***' : null,
+        refresh_token_encrypted: encryptedRefreshToken,
         expires_at: expiresAt,
         account_name: accountName,
         is_active: true
