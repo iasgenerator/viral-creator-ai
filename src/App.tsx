@@ -39,7 +39,7 @@ const AppContent = () => {
 
   return (
     // Use HashRouter so the app works under GitHub Pages without extra server config
-    <HashRouter>
+    <HashRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/auth" element={<Auth />} />

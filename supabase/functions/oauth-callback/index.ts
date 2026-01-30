@@ -129,9 +129,7 @@ serve(async (req) => {
       .insert({
         user_id: userId,
         platform,
-        access_token: '***ENCRYPTED***', // Placeholder only
         access_token_encrypted: encryptedAccessToken,
-        refresh_token: refreshToken ? '***ENCRYPTED***' : null,
         refresh_token_encrypted: encryptedRefreshToken,
         expires_at: expiresAt,
         account_name: accountName,
