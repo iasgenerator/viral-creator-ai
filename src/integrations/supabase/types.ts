@@ -16,7 +16,6 @@ export type Database = {
     Tables: {
       platform_connections: {
         Row: {
-          access_token: string
           access_token_encrypted: string | null
           account_id: string | null
           account_name: string | null
@@ -25,13 +24,11 @@ export type Database = {
           id: string
           is_active: boolean | null
           platform: Database["public"]["Enums"]["platform_type"]
-          refresh_token: string | null
           refresh_token_encrypted: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
-          access_token: string
           access_token_encrypted?: string | null
           account_id?: string | null
           account_name?: string | null
@@ -40,13 +37,11 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           platform: Database["public"]["Enums"]["platform_type"]
-          refresh_token?: string | null
           refresh_token_encrypted?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
-          access_token?: string
           access_token_encrypted?: string | null
           account_id?: string | null
           account_name?: string | null
@@ -55,7 +50,6 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           platform?: Database["public"]["Enums"]["platform_type"]
-          refresh_token?: string | null
           refresh_token_encrypted?: string | null
           updated_at?: string
           user_id?: string
