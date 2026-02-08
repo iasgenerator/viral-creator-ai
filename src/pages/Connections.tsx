@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Youtube, Instagram, Video, Unlink } from "lucide-react";
+import { Youtube, Unlink } from "lucide-react";
 import { toast } from "sonner";
 
 interface PlatformConnection {
@@ -80,6 +80,7 @@ export default function Connections() {
     }
   };
 
+  // Only YouTube is enabled - TikTok and Instagram are disabled
   const platforms = [
     {
       id: "youtube" as const,
@@ -87,20 +88,6 @@ export default function Connections() {
       icon: Youtube,
       color: "text-red-500",
       description: "Connectez votre chaîne YouTube pour publier automatiquement vos Shorts"
-    },
-    {
-      id: "tiktok" as const,
-      name: "TikTok",
-      icon: Video,
-      color: "text-pink-500",
-      description: "Connectez votre compte TikTok pour publier vos vidéos"
-    },
-    {
-      id: "instagram" as const,
-      name: "Instagram",
-      icon: Instagram,
-      color: "text-purple-500",
-      description: "Connectez votre compte Instagram pour publier vos Reels"
     }
   ];
 
