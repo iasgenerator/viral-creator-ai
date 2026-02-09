@@ -139,18 +139,22 @@ serve(async (req) => {
     if (error) throw error;
 
     // Rediriger vers la page des connexions
-    const appUrl = Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '.lovable.app') || '';
+    // Use the APP_URL environment variable or construct from request origin
+    const appUrl = Deno.env.get('APP_URL') || 'https://id-preview--825dbc9e-570b-47a7-b52b-b5504444fe69.lovable.app';
+    console.log('OAuth success, redirecting to:', `${appUrl}/connections`);
+    
     return new Response(null, {
       status: 302,
       headers: {
-        Location: `${appUrl}/connections`
+        Location: `${appUrl}/connections?success=true`
       }
     });
 
   } catch (error) {
     console.error('Error in oauth-callback:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    const appUrl = Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '.lovable.app') || '';
+    const appUrl = Deno.env.get('APP_URL') || 'https://id-preview--825dbc9e-570b-47a7-b52b-b5504444fe69.lovable.app';
+    
     return new Response(null, {
       status: 302,
       headers: {
