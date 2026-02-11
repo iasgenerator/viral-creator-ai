@@ -47,6 +47,10 @@ All colors MUST be HSL.
     --shadow-glow: 0 10px 50px -10px hsl(14 100% 57% / 0.4);
     --shadow-card: 0 4px 24px -4px hsl(0 0% 0% / 0.5);
     --shadow-elevated: 0 8px 32px -8px hsl(0 0% 0% / 0.6), 0 0 0 1px hsl(228 10% 18% / 0.5);
+
+    --glass-bg: hsl(228 12% 12% / 0.6);
+    --glass-border: hsl(210 20% 95% / 0.08);
+    --glass-highlight: hsl(210 20% 95% / 0.04);
   }
 }
 
