@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Plus, TrendingUp, Video, Calendar, LogOut, Link as LinkIcon, ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, TrendingUp, Video, Calendar, LogOut, ChevronDown, ChevronUp } from "lucide-react";
+import Navbar from "@/components/Navbar";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import VideoPreview from "@/components/VideoPreview";
@@ -161,30 +162,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Dashboard</h1>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={handleLogout}>
-              <LogOut className="mr-2 h-4 w-4" />
-              Déconnexion
-            </Button>
-            <Button asChild variant="outline">
-              <Link to="/connections">
-                <LinkIcon className="mr-2 h-4 w-4" />
-                Connexions
-              </Link>
-            </Button>
-            <Button asChild variant="hero">
-              <Link to="/create">
-                <Plus className="mr-2" />
-                Nouveau projet
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
