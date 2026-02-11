@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Youtube, Unlink } from "lucide-react";
 import { toast } from "sonner";
+import Navbar from "@/components/Navbar";
 
 interface PlatformConnection {
   id: string;
@@ -105,6 +106,7 @@ export default function Connections() {
 
   return (
     <div className="min-h-screen bg-background">
+      <Navbar />
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
