@@ -89,6 +89,10 @@ const Navbar = () => {
                   <p className="text-xs text-muted-foreground mt-0.5">Compte connecté</p>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate("/profile")}>
+                  <User className="mr-2 h-4 w-4" />
+                  Mon profil
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate("/dashboard")}>
                   <LayoutDashboard className="mr-2 h-4 w-4" />
                   Dashboard
