@@ -1,11 +1,24 @@
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Video, LayoutDashboard, Link2, Plus, Menu, X } from "lucide-react";
+import { Video, LayoutDashboard, Link2, Plus, Menu, X, LogOut } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Navbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -43,9 +56,24 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="hero" size="sm" asChild className="hidden sm:inline-flex">
-            <Link to="/dashboard">Commencer</Link>
-          </Button>
+          {user ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="hidden sm:inline-flex gap-2 text-muted-foreground hover:text-foreground"
+              onClick={async () => {
+                await supabase.auth.signOut();
+                navigate("/");
+              }}
+            >
+              <LogOut className="h-4 w-4" />
+              Déconnexion
+            </Button>
+          ) : (
+            <Button variant="hero" size="sm" asChild className="hidden sm:inline-flex">
+              <Link to="/auth">Commencer</Link>
+            </Button>
+          )}
 
           {/* Mobile hamburger */}
           <Button
@@ -78,9 +106,24 @@ const Navbar = () => {
                 </Link>
               </Button>
             ))}
-            <Button variant="hero" className="w-full mt-2" asChild onClick={() => setMobileOpen(false)}>
-              <Link to="/dashboard">Commencer</Link>
-            </Button>
+            {user ? (
+              <Button
+                variant="ghost"
+                className="w-full justify-start mt-2 gap-3 text-muted-foreground"
+                onClick={async () => {
+                  setMobileOpen(false);
+                  await supabase.auth.signOut();
+                  navigate("/");
+                }}
+              >
+                <LogOut className="h-4 w-4" />
+                Déconnexion
+              </Button>
+            ) : (
+              <Button variant="hero" className="w-full mt-2" asChild onClick={() => setMobileOpen(false)}>
+                <Link to="/auth">Commencer</Link>
+              </Button>
+            )}
           </div>
         </div>
       )}
