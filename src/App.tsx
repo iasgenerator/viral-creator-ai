@@ -13,6 +13,7 @@ import Connections from "./pages/Connections";
 import CGU from "./pages/CGU";
 import PolitiqueConfidentialite from "./pages/PolitiqueConfidentialite";
 import NotFound from "./pages/NotFound";
+import AuthGuard from "./components/AuthGuard";
 
 const queryClient = new QueryClient();
 
@@ -43,9 +44,9 @@ const AppContent = () => {
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/auth" element={<Auth />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/create" element={<Create />} />
-        <Route path="/connections" element={<Connections />} />
+        <Route path="/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />
+        <Route path="/create" element={<AuthGuard><Create /></AuthGuard>} />
+        <Route path="/connections" element={<AuthGuard><Connections /></AuthGuard>} />
         <Route path="/cgu" element={<CGU />} />
         <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
