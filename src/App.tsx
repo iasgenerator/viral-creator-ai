@@ -7,6 +7,7 @@ import { HashRouter, Routes, Route } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
 import Create from "./pages/Create";
 import Auth from "./pages/Auth";
 import Connections from "./pages/Connections";
@@ -45,6 +46,7 @@ const AppContent = () => {
         <Route path="/" element={<Index />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />
+        <Route path="/profile" element={<AuthGuard><Profile /></AuthGuard>} />
         <Route path="/create" element={<AuthGuard><Create /></AuthGuard>} />
         <Route path="/connections" element={<AuthGuard><Connections /></AuthGuard>} />
         <Route path="/cgu" element={<CGU />} />
